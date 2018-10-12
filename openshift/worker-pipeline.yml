@@ -1,0 +1,11 @@
+kind: "BuildConfig"
+apiVersion: "v1"
+metadata:
+  name: "worker-pipeline"
+spec:
+  source:
+    git:
+      uri: "https://github.com/msehnout/openshift-deployment-example"
+  strategy:
+    jenkinsPipelineStrategy:
+      jenkinsfilePath: "worker-python/Jenkinsfile"
