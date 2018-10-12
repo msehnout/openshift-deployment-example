@@ -5,7 +5,7 @@ extern crate log;
 extern crate reqwest;
 extern crate simple_logger;
 
-use reqwest::async::Client;
+use reqwest::async::{Client, Response};
 use warp::Filter;
 use warp::Future;
 
@@ -19,15 +19,15 @@ fn main() {
         "yes"
     });
 
-    let f = path!("f" / String)
+    let f = path!("f" / u32)
         .and(client)
-        .and_then(|arg, client: Client| {
+        .and_then(|arg: u32, client: Client| {
             info!("spawn request");
-            client.get(&format!("http://{}", arg)).send().map_err(|e| {
+            client.get(&format!("http://127.0.0.1:8000/f/{}", arg)).send().map_err(|e| {
                 error!("{}", e);
                 warp::reject::server_error()
             })
-        }).map(|response| format!("res: {:#?}", response));
+        }).map(|response: Response| format!("res: {:#?}", response));
 
     let api = f.or(hello);
 
