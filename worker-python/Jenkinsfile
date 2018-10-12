@@ -1,0 +1,36 @@
+node('python') {
+  stage('Build') {
+    git url: "https://github.com/msehnout/openshift-deployment-example"
+    sh """
+    pushd worker-python
+    python3 -m venv ${PWD}/__venv__
+    source __venv__/bin/activate
+    pip3 install aiohttp
+    deactivate
+    popd
+    """
+  }
+  stage('Test') {
+    parallel(
+      "Dummy Tests": {
+        sh """
+        pushd worker
+        pwd
+        ls -la
+        echo 0
+        popd
+        """
+      },
+    )
+  }
+  stage('Build Image') {
+    sh "oc start-build worker"
+  }
+  stage('Deploy') {
+    openshiftDeploy depCfg: 'worker'
+    openshiftVerifyDeployment depCfg: 'worker', replicaCount: 1, verifyReplicaCount: true
+  }
+  stage('System Test') {
+    sh "curl -s http://worker:8080/f/2 | grep '4'"
+  }
+}
