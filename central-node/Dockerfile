@@ -7,11 +7,10 @@ WORKDIR /central-node
 COPY ./Cargo.lock ./Cargo.lock
 COPY ./Cargo.toml ./Cargo.toml
 
-RUN cargo build --release
-RUN rm src/*.rs
+RUN cargo build --release \
+    rm -f src/*.rs target/release/central-node
 
 COPY ./src ./src
-RUN cat ./src/main.rs
 
 RUN cargo build --release
 
