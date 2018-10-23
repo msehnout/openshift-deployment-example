@@ -11,6 +11,7 @@ RUN cargo build --release
 RUN rm src/*.rs
 
 COPY ./src ./src
+RUN cat ./src/main.rs
 
 RUN cargo build --release
 
